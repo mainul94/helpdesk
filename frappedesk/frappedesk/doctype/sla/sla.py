@@ -14,7 +14,6 @@ from frappe.utils import (
 	get_datetime_str,
 	get_link_to_form,
 	get_time,
-	get_system_timezone,
 	get_weekdays,
 	getdate,
 	nowdate,
@@ -940,3 +939,14 @@ def get_sla_doctypes():
 		doctypes.append(entry.document_type)
 
 	return doctypes
+
+
+def _get_system_timezone():
+	return frappe.db.get_system_setting("time_zone") or "Asia/Dhaka"  # Default to Dhaka ?!
+
+
+def get_system_timezone():
+	if frappe.local.flags.in_test:
+		return _get_system_timezone()
+
+	return frappe.cache().get_value("time_zone", _get_system_timezone)
